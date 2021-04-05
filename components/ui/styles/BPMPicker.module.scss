@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  align-items: center;
+  input[type="number"] {
+    background: none;
+    border: none;
+    color: white;
+    text-align: center;
+    width: 3rem;
+    -moz-appearance: textfield;
+    cursor: n-resize;
+    font-size: 1rem;
+    outline: none;
+    height: 100%;
+    padding: 0;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  label {
+    margin-bottom: 4px;
+  }
+}
