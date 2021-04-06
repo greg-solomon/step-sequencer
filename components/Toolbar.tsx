@@ -1,26 +1,34 @@
-import React, { ChangeEvent, Dispatch, SetStateAction } from "react";
+import React from "react";
 import styles from "../styles/Toolbar.module.scss";
 import { Button } from "./ui/Button";
 import { FaStop, FaPlay } from "react-icons/fa";
-import { BPMPicker } from "./ui/BPMPicker";
-interface ToolbarProps {
-  bpmState: [number, Dispatch<SetStateAction<number>>];
-}
+import { NumberInput } from "./ui/NumberInput";
+import { GREEN, MAX_BPM, MIN_BPM, RED } from "../lib/constants/constants";
+import { Context } from "../lib/hooks/Context";
 
-export const Toolbar: React.FC<ToolbarProps> = ({ bpmState }) => {
+export const Toolbar: React.FC = () => {
+  const { bpmState, sequenceLength, setSequenceLength } = React.useContext(
+    Context
+  );
   const [bpm, setBpm] = bpmState;
-  const handleBpmChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setBpm(+e.target.value);
-  };
   return (
     <div className={styles.container}>
-      <Button>
-        <FaStop color="#dc3545" />
-      </Button>
-      <Button>
-        <FaPlay color="#28a745" />
-      </Button>
-      <BPMPicker value={bpm} bpmState={bpmState} label="BPM" />
+      <div></div>
+      <div>
+        <Button>
+          <FaStop color={RED} />
+        </Button>
+        <Button>
+          <FaPlay color={GREEN} />
+        </Button>
+        <NumberInput
+          label="BPM"
+          dispatch={setBpm}
+          value={bpm}
+          min={MIN_BPM}
+          max={MAX_BPM}
+        />
+      </div>
     </div>
   );
 };

@@ -1,10 +1,10 @@
-type DrumSample = {
+type ITrack = {
   name: string;
   file: string;
   steps: number[];
 };
 
-const drums: DrumSample[] = [
+const drums: ITrack[] = [
   {
     name: "Kick",
     file: "/sounds/kick.wav",
@@ -38,4 +38,4 @@ const drums: DrumSample[] = [
 ];
 
 export { drums };
-export type { DrumSample };
+export type { ITrack };

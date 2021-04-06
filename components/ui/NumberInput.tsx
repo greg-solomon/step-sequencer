@@ -1,20 +1,22 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { MAX_BPM, MIN_BPM } from "../../lib/constants/constants";
 import styles from "./styles/BPMPicker.module.scss";
 
 type BaseProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-interface BPMPickerProps extends BaseProps {
+interface NumberInput extends BaseProps {
   label: string;
-  bpmState: [number, Dispatch<SetStateAction<number>>];
+  dispatch: Dispatch<SetStateAction<number>>;
+  max: number;
+  min: number;
 }
 
-export const BPMPicker: React.FC<BPMPickerProps> = ({
+export const NumberInput: React.FC<NumberInput> = ({
   label,
-  bpmState,
+  dispatch,
+  max,
+  min,
   ...props
 }) => {
-  const [bpm, setBpm] = bpmState;
   const [mouseDown, setMouseDown] = React.useState(false);
 
   React.useEffect(() => {
@@ -34,11 +36,11 @@ export const BPMPicker: React.FC<BPMPickerProps> = ({
 
   const handleMouseMove = (e: MouseEvent) => {
     const { movementY } = e;
-    setBpm((prev) => {
+    dispatch((prev) => {
       const nextValue = prev - movementY;
 
-      if (nextValue > MAX_BPM) return MAX_BPM;
-      if (nextValue < MIN_BPM) return MIN_BPM;
+      if (nextValue > max) return max;
+      if (nextValue < min) return min;
       return nextValue;
     });
   };
@@ -52,12 +54,12 @@ export const BPMPicker: React.FC<BPMPickerProps> = ({
   };
 
   const handleBlur: React.FocusEventHandler<HTMLInputElement> = (event) => {
-    if (+event.target.value < MIN_BPM) {
-      setBpm(10);
+    if (+event.target.value < min) {
+      dispatch(10);
       return;
     }
-    if (+event.target.value > MAX_BPM) {
-      setBpm(522);
+    if (+event.target.value > max) {
+      dispatch(522);
       return;
     }
   };
@@ -65,7 +67,7 @@ export const BPMPicker: React.FC<BPMPickerProps> = ({
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
-    setBpm(+value);
+    dispatch(+value);
   };
 
   return (
