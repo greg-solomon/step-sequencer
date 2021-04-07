@@ -10,9 +10,12 @@ interface ContextState {
   bpmState: [number, Dispatch<SetStateAction<number>>];
   sequenceLength: number;
   setSequenceLength: Dispatch<SetStateAction<number>>;
+  togglePlayback: () => void;
   toggleNote: (newNote: number, trackName: string) => void;
   isPlaying: boolean;
-  playHandlers: ToggleHandlers;
+  currentStep: any;
+  timePerSequence: number;
+  totalTime: number;
 }
 
 const Context = React.createContext<ContextState>(null);
@@ -20,20 +23,26 @@ const Context = React.createContext<ContextState>(null);
 const Provider: React.FC = ({ children }) => {
   const [sequenceLength, setSequenceLength] = React.useState(16);
   const [tracks, setTracks] = React.useState(drums);
+  const [pastLapsedTime, setPastLapse] = React.useState(0);
   const [bpm, setBpm] = React.useState(120);
   const [currentStep, setCurrentStep] = React.useState(null);
   const [startTime, setStartTime] = React.useState(null);
-  const [isPlaying, playHandlers] = useToggle();
+  const isPlaying = startTime !== null;
   const playerTime = useTimer(isPlaying);
 
+  const lapsedTime = isPlaying ? Math.max(0, playerTime - startTime) : 0;
+  const totalTime = pastLapsedTime + lapsedTime;
   const timePerSequence = (BASE_BPM_PER_SEC / bpm) * 1000 * sequenceLength;
+  const timePerStep = timePerSequence / sequenceLength;
+
   React.useEffect(() => {
     if (isPlaying) {
-      // setCurrentStep()
+      setCurrentStep(Math.floor(totalTime / timePerStep) % sequenceLength);
     } else {
       setCurrentStep(null);
     }
-  }, [isPlaying]);
+    console.log(currentStep);
+  }, [startTime, timePerStep, totalTime, sequenceLength]);
 
   // handlers
   const toggleNote = (newNote: number, trackName: string) => {
@@ -67,6 +76,15 @@ const Provider: React.FC = ({ children }) => {
     }
   };
 
+  const togglePlayback = () => {
+    if (isPlaying) {
+      setPastLapse((l) => l + performance.now() - startTime);
+      setStartTime(null);
+    } else {
+      setStartTime(performance.now());
+    }
+  };
+
   return (
     <Context.Provider
       value={{
@@ -76,7 +94,10 @@ const Provider: React.FC = ({ children }) => {
         toggleNote,
         bpmState: [bpm, setBpm],
         isPlaying,
-        playHandlers,
+        currentStep,
+        togglePlayback,
+        totalTime,
+        timePerSequence,
       }}
     >
       {children}

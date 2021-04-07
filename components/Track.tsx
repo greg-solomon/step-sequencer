@@ -4,8 +4,9 @@ import { GREEN } from "../lib/constants/constants";
 import { ITrack } from "../lib/constants/drums";
 import { Context } from "../lib/hooks/Context";
 import { useSequence } from "../lib/hooks/useSequence";
+import useSound from "../lib/hooks/useSound";
 import styles from "../styles/TrackList.module.scss";
-import { Note } from "./ui/Note";
+import { Note } from "./Note";
 
 interface TrackProps {
   track: ITrack;
@@ -14,9 +15,8 @@ interface TrackProps {
 
 export const Track: React.FC<TrackProps> = ({ track, length }) => {
   const audioRef = React.useRef<HTMLAudioElement>(null);
-  const sequence = useSequence(track.steps, length);
-
-  const { toggleNote } = React.useContext(Context);
+  const [play] = useSound(track.file);
+  const { toggleNote, currentStep, sequenceLength } = React.useContext(Context);
 
   const playSample = () => {
     if (audioRef.current) {
@@ -24,6 +24,20 @@ export const Track: React.FC<TrackProps> = ({ track, length }) => {
     }
   };
 
+  const notes = [...Array(sequenceLength)].map((el, i) => {
+    const isActive = track.steps.indexOf(i) !== -1;
+    const isNoteOnCurrentStep = currentStep === i;
+
+    return (
+      <Note
+        active={isActive}
+        key={`${track.name}_${i}`}
+        onClick={() => toggleNote(i, track.name)}
+        isCurrent={isNoteOnCurrentStep}
+        play={play}
+      />
+    );
+  });
   return (
     <div className={styles.trackContainer}>
       <div className={styles.trackInfo}>
@@ -36,15 +50,7 @@ export const Track: React.FC<TrackProps> = ({ track, length }) => {
           <FaPlay color={GREEN} />
         </button>
       </div>
-      <div className={styles.trackSteps}>
-        {sequence.map((isActive, i) => (
-          <Note
-            active={isActive}
-            key={`${track.name}_${i}`}
-            onClick={() => toggleNote(i, track.name)}
-          />
-        ))}
-      </div>
+      <div className={styles.trackSteps}>{notes}</div>
     </div>
   );
 };

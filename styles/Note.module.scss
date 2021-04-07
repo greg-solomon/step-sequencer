@@ -1,5 +1,6 @@
 .note,
-.activeNote {
+.activeNote,
+.currentNote {
   width: 2rem;
   height: 2.5rem;
   border: 1px solid gray;
@@ -9,4 +10,8 @@
 
 .activeNote {
   background-color: slateblue;
+}
+
+.currentNote {
+  background-color: green;
 }

@@ -7,19 +7,15 @@ import { GREEN, MAX_BPM, MIN_BPM, RED } from "../lib/constants/constants";
 import { Context } from "../lib/hooks/Context";
 
 export const Toolbar: React.FC = () => {
-  const { bpmState, sequenceLength, setSequenceLength } = React.useContext(
-    Context
-  );
+  const { bpmState, togglePlayback, isPlaying } = React.useContext(Context);
   const [bpm, setBpm] = bpmState;
   return (
     <div className={styles.container}>
       <div></div>
       <div>
-        <Button>
-          <FaStop color={RED} />
-        </Button>
-        <Button>
-          <FaPlay color={GREEN} />
+        <Button onClick={togglePlayback}>
+          {!isPlaying && <FaPlay color={GREEN} />}
+          {isPlaying && <FaStop color={RED} />}
         </Button>
         <NumberInput
           label="BPM"
