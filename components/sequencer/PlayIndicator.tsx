@@ -1,6 +1,6 @@
 import React, { MutableRefObject } from "react";
-import { Context } from "../lib/hooks/Context";
-import styles from "../styles/PlayIndicator.module.scss";
+import { Context } from "../../lib/hooks/Context";
+import styles from "../../styles/PlayIndicator.module.scss";
 
 interface PlayIndicatorProps {
   widthRef: MutableRefObject<HTMLDivElement>;
@@ -10,7 +10,6 @@ export const PlayIndicator: React.FC<PlayIndicatorProps> = ({ widthRef }) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useLayoutEffect(() => {
-    console.log(widthRef.current.scrollHeight);
     if (widthRef.current) {
       let progress = Math.min(
         (totalTime % timePerSequence) / timePerSequence,

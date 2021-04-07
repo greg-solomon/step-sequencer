@@ -1,7 +1,7 @@
 import React from "react";
-import { Context } from "../lib/hooks/Context";
-import styles from "../styles/TrackList.module.scss";
+import { Context } from "../../lib/hooks/Context";
 import { Track } from "./Track";
+import styles from "../../styles/TrackList.module.scss";
 
 export const TrackList = React.forwardRef<HTMLDivElement>(({}, ref) => {
   const { tracks, sequenceLength } = React.useContext(Context);

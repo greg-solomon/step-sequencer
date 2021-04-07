@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/Note.module.scss";
+import styles from "../../styles/Note.module.scss";
 
 interface NoteProps {
   active: boolean;

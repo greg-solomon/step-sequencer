@@ -1,32 +1,43 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import { FaPlay } from "react-icons/fa";
 import { FiMoreVertical } from "react-icons/fi";
-import { GREEN } from "../lib/constants/constants";
-import { ITrack } from "../lib/constants/drums";
-import { Context } from "../lib/hooks/Context";
-import useSound from "../lib/hooks/useSound";
-import styles from "../styles/TrackList.module.scss";
+import { MdClose } from "react-icons/md";
+import { GREEN } from "../../lib/constants/constants";
+import { ITrack } from "../../lib/constants/drums";
+import { Context } from "../../lib/hooks/Context";
+import useSound from "../../lib/hooks/useSound";
 import { Note } from "./Note";
-import { Button } from "./ui/Button";
+import { Button } from "../ui/Button";
+import styles from "../../styles/TrackList.module.scss";
 
 interface TrackProps {
   track: ITrack;
-  length: number;
 }
 
-export const Track: React.FC<TrackProps> = ({ track, length }) => {
+export const Track: React.FC<TrackProps> = ({ track }) => {
   const audioRef = React.useRef<HTMLAudioElement>(null);
-  const [play] = useSound(track.file);
+  const [volume, setVolume] = React.useState(1);
+  const [play] = useSound(track.file, volume);
   const [showOptionsPopover, togglePopover] = React.useState(false);
   const { toggleNote, currentStep, sequenceLength } = React.useContext(Context);
-  const [enteredTrackName, setEnteredTrackName] = React.useState(track.name);
 
+  React.useEffect(() => {
+    if (showOptionsPopover) {
+    } else {
+    }
+  }, [showOptionsPopover]);
+  // HANDLERS
   const playSample = () => {
     if (audioRef.current) {
       audioRef.current.play();
     }
   };
 
+  const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setVolume(+e.target.value / 100);
+  };
+
+  // CONTENT
   const notes = [...Array(sequenceLength)].map((el, i) => {
     const isActive = track.steps.indexOf(i) !== -1;
     const isNoteOnCurrentStep = currentStep === i;
@@ -58,13 +69,13 @@ export const Track: React.FC<TrackProps> = ({ track, length }) => {
             <FiMoreVertical color="white" />
           </Button>
         </div>
-        {track.name}
+        <p>{track.name}</p>
         {showOptionsPopover && (
           <Dropdown
-            trackName={enteredTrackName}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setEnteredTrackName(e.target.value)
-            }
+            trackName={track.name}
+            handleVolumeChange={handleVolumeChange}
+            volume={volume}
+            handleClose={() => togglePopover(false)}
           />
         )}
       </div>
@@ -75,23 +86,34 @@ export const Track: React.FC<TrackProps> = ({ track, length }) => {
 
 interface DropdownProps {
   trackName: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  volume: number;
+  handleVolumeChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleClose: () => void;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ trackName, onChange }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+  trackName,
+  handleVolumeChange,
+  volume,
+  handleClose,
+}) => {
   return (
     <div className={styles.options}>
+      <h4>{trackName}</h4>
       <div className={styles.formRow}>
-        <label htmlFor="trackname">Name</label>
-        <input type="text" value={trackName} onChange={(e) => onChange(e)} />
+        <label htmlFor="trackUpload">Volume</label>
+        <input
+          type="range"
+          name="volume"
+          onChange={handleVolumeChange}
+          value={volume * 100}
+          min={0}
+          max={100}
+        />
       </div>
-      <div className={styles.formRow}>
-        <label htmlFor="trackUpload">Change Sound</label>
-        <input type="file" name="trackUpload" />
-      </div>
-
-      {/*  VOLUME, FILE */}
-      <Button>Save</Button>
+      <Button onClick={handleClose}>
+        <MdClose />
+      </Button>
     </div>
   );
 };

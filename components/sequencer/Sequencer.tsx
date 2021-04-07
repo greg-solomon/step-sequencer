@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/Sequencer.module.scss";
+import styles from "../../styles/Sequencer.module.scss";
 import { PlayIndicator } from "./PlayIndicator";
 import { Toolbar } from "./Toolbar";
 import { TrackList } from "./TrackList";

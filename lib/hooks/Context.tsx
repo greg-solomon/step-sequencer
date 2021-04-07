@@ -3,7 +3,6 @@ import { Dispatch } from "react";
 import { BASE_BPM_PER_SEC } from "../constants/constants";
 import { drums, ITrack } from "../constants/drums";
 import { useTimer } from "./useTimer";
-import { ToggleHandlers, useToggle } from "./useToggle";
 
 interface ContextState {
   tracks: ITrack[];
@@ -95,14 +94,14 @@ const Provider: React.FC = ({ children }) => {
       value={{
         tracks,
         sequenceLength,
-        setSequenceLength,
-        toggleNote,
-        bpmState: [bpm, setBpm],
         isPlaying,
         currentStep,
-        togglePlayback,
         totalTime,
         timePerSequence,
+        bpmState: [bpm, setBpm],
+        setSequenceLength,
+        toggleNote,
+        togglePlayback,
         resetPlayback,
       }}
     >

@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import { Sequencer, SequencerProps } from "../components/Sequencer";
+import { Sequencer } from "../components/sequencer/Sequencer";
 import styles from "../styles/Home.module.scss";
 
 export default function Home() {
