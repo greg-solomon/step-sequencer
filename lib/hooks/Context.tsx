@@ -32,7 +32,7 @@ const Provider: React.FC = ({ children }) => {
 
   const lapsedTime = isPlaying ? Math.max(0, playerTime - startTime) : 0;
   const totalTime = pastLapsedTime + lapsedTime;
-  const timePerSequence = (BASE_BPM_PER_SEC / bpm) * 1000 * sequenceLength;
+  const timePerSequence = (BASE_BPM_PER_SEC / bpm) * 1000 * 4;
   const timePerStep = timePerSequence / sequenceLength;
 
   React.useEffect(() => {
