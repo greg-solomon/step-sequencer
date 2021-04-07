@@ -12,6 +12,7 @@ interface ContextState {
   setSequenceLength: Dispatch<SetStateAction<number>>;
   togglePlayback: () => void;
   toggleNote: (newNote: number, trackName: string) => void;
+  resetPlayback: () => void;
   isPlaying: boolean;
   currentStep: any;
   timePerSequence: number;
@@ -41,7 +42,6 @@ const Provider: React.FC = ({ children }) => {
     } else {
       setCurrentStep(null);
     }
-    console.log(currentStep);
   }, [startTime, timePerStep, totalTime, sequenceLength]);
 
   // handlers
@@ -85,6 +85,11 @@ const Provider: React.FC = ({ children }) => {
     }
   };
 
+  const resetPlayback = () => {
+    setStartTime(null);
+    setPastLapse(0);
+  };
+
   return (
     <Context.Provider
       value={{
@@ -98,6 +103,7 @@ const Provider: React.FC = ({ children }) => {
         togglePlayback,
         totalTime,
         timePerSequence,
+        resetPlayback,
       }}
     >
       {children}

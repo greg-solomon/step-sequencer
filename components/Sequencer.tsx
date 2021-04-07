@@ -1,20 +1,16 @@
-import React, { SetStateAction } from "react";
-import { Dispatch } from "react";
-import { ITrack } from "../lib/constants/drums";
+import React from "react";
 import styles from "../styles/Sequencer.module.scss";
 import { PlayIndicator } from "./PlayIndicator";
 import { Toolbar } from "./Toolbar";
 import { TrackList } from "./TrackList";
 
-export interface SequencerProps {}
-
-export const Sequencer: React.FC<SequencerProps> = (props) => {
-  const ref = React.useRef();
+export const Sequencer: React.FC = () => {
+  const widthRef = React.useRef(null);
   return (
-    <div className={styles.container} ref={ref}>
+    <div className={styles.container}>
       <Toolbar />
-      <PlayIndicator trackRef={ref} />
-      <TrackList />
+      <PlayIndicator widthRef={widthRef} />
+      <TrackList ref={widthRef} />
     </div>
   );
 };

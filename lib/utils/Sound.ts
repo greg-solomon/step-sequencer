@@ -1,3 +1,4 @@
+// helpful polyfill for sounds found in this repository -> https://github.com/joeshub/react-808/blob/master/src/utils/Sound.js
 class Sound {
   audioContext: AudioContext;
   isSafariFixed: boolean;

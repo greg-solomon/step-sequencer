@@ -26,5 +26,6 @@ export const Note: React.FC<NoteProps> = ({
       play();
     }
   }, [active, isCurrent, play]);
+
   return <div className={className} onClick={onClick} />;
 };
