@@ -6,25 +6,22 @@ import { NumberInput } from "../ui/NumberInput";
 import { GREEN, MAX_BPM, MIN_BPM, RED } from "../../lib/constants/constants";
 import { Context } from "../../lib/hooks/Context";
 
-export const Toolbar: React.FC = () => {
-  const {
-    bpmState,
-    togglePlayback,
-    resetPlayback,
-    isPlaying,
-  } = React.useContext(Context);
-  const [bpm, setBpm] = bpmState;
+export const Toolbar: React.FC = React.memo(() => {
+  const context = React.useContext(Context);
+  const [bpm, setBpm] = context.bpmState;
   return (
     <div className={styles.container}>
-      <div></div>
       <div>
-        <Button onClick={resetPlayback}>
+        <Button onClick={context.clearNotes}>Clear</Button>
+      </div>
+      <div>
+        <Button onClick={context.resetPlayback}>
           <FaStop color={RED} />
         </Button>
 
-        <Button onClick={togglePlayback}>
-          {!isPlaying && <FaPlay color={GREEN} />}
-          {isPlaying && <FaPause color="white" />}
+        <Button onClick={context.togglePlayback}>
+          {!context.isPlaying && <FaPlay color={GREEN} />}
+          {context.isPlaying && <FaPause color="white" />}
         </Button>
         <NumberInput
           label="BPM"
@@ -36,4 +33,4 @@ export const Toolbar: React.FC = () => {
       </div>
     </div>
   );
-};
+});

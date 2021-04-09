@@ -2,8 +2,16 @@ import React from "react";
 import Head from "next/head";
 import { Sequencer } from "../components/sequencer/Sequencer";
 import styles from "../styles/Home.module.scss";
+import { useDevice } from "../lib/hooks/useDevice";
+import { InvalidBrowserMessage } from "../components/InvalidBrowserMessage";
 
 export default function Home() {
+  const isValidDevice = useDevice();
+
+  if (!isValidDevice) {
+    return <InvalidBrowserMessage />;
+  }
+
   return (
     <>
       <Head>

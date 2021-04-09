@@ -6,26 +6,36 @@ interface NoteProps {
   isCurrent: boolean;
   play: () => void;
   onClick: () => void;
+  isMousePressed: boolean;
 }
 
-export const Note: React.FC<NoteProps> = ({
-  active,
-  onClick,
-  isCurrent,
-  play,
-}) => {
-  const className =
-    active && isCurrent
-      ? styles.currentNote
-      : active
-      ? styles.activeNote
-      : styles.note;
+export const Note: React.FC<NoteProps> = React.memo(
+  ({ active, onClick, isCurrent, play, isMousePressed }) => {
+    const className =
+      active && isCurrent
+        ? styles.currentNote
+        : active
+        ? styles.activeNote
+        : styles.note;
 
-  React.useEffect(() => {
-    if (active && isCurrent) {
-      play();
-    }
-  }, [active, isCurrent, play]);
+    React.useEffect(() => {
+      if (active && isCurrent) {
+        play();
+      }
+    }, [active, isCurrent, play]);
 
-  return <div className={className} onClick={onClick} />;
-};
+    const handleMouseOver: React.MouseEventHandler<HTMLDivElement> = (e) => {
+      if (isMousePressed) {
+        onClick();
+      }
+    };
+
+    return (
+      <div
+        className={className}
+        onMouseDown={onClick}
+        onMouseOver={handleMouseOver}
+      />
+    );
+  }
+);

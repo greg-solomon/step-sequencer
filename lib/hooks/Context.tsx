@@ -8,14 +8,16 @@ interface ContextState {
   tracks: ITrack[];
   bpmState: [number, Dispatch<SetStateAction<number>>];
   sequenceLength: number;
-  setSequenceLength: Dispatch<SetStateAction<number>>;
-  togglePlayback: () => void;
-  toggleNote: (newNote: number, trackName: string) => void;
-  resetPlayback: () => void;
   isPlaying: boolean;
   currentStep: any;
   timePerSequence: number;
   totalTime: number;
+  setSequenceLength: Dispatch<SetStateAction<number>>;
+  togglePlayback: () => void;
+  toggleNote: (newNote: number, trackName: string) => void;
+  resetPlayback: () => void;
+  stopPlayback: () => void;
+  clearNotes: () => void;
 }
 
 const Context = React.createContext<ContextState>(null);
@@ -89,24 +91,38 @@ const Provider: React.FC = ({ children }) => {
     setPastLapse(0);
   };
 
-  return (
-    <Context.Provider
-      value={{
-        tracks,
-        sequenceLength,
-        isPlaying,
-        currentStep,
-        totalTime,
-        timePerSequence,
-        bpmState: [bpm, setBpm],
-        setSequenceLength,
-        toggleNote,
-        togglePlayback,
-        resetPlayback,
-      }}
-    >
-      {children}
-    </Context.Provider>
-  );
+  const stopPlayback = () => {
+    setStartTime(null);
+  };
+
+  const clearNotes = () => {
+    setTracks((current) =>
+      current.map((track) => {
+        return {
+          ...track,
+          steps: [],
+        };
+      })
+    );
+  };
+
+  const contextValue: ContextState = {
+    tracks,
+    sequenceLength,
+    isPlaying,
+    currentStep,
+    totalTime,
+    timePerSequence,
+    bpmState: [bpm, setBpm],
+    setSequenceLength,
+    toggleNote,
+    togglePlayback,
+    resetPlayback,
+    stopPlayback,
+    clearNotes,
+  };
+
+  return <Context.Provider value={contextValue}>{children}</Context.Provider>;
 };
+
 export { Context, Provider };

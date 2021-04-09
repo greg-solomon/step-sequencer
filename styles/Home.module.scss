@@ -1,4 +1,13 @@
 .main {
-  width: 70%;
   margin: 0 auto;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+}
+
+@media (min-width: 1440px) {
+  .main {
+    width: 70%;
+  }
 }

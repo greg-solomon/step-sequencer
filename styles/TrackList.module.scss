@@ -6,22 +6,31 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
   position: relative;
   width: 18%;
+  padding: 0 1%;
   border-right: 1px solid gray;
+  background-color: #313131;
   button {
     border: none;
     background: none;
-    padding: 0.5rem;
+    padding: 0rem;
     outline: none;
+    width: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  p {
+    justify-self: flex-end;
+    font-size: 0.5rem;
   }
 }
 
 .trackContainer {
   border-bottom: 1px solid gray;
   display: flex;
-  padding: 0.25rem;
 }
 
 .trackSteps {
@@ -34,11 +43,12 @@
 .trackControls {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .options {
   width: 240px;
-  background-color: #212121;
+  background-color: #313131;
   position: absolute;
   top: 100%;
   z-index: 2;
@@ -69,4 +79,21 @@
 .formRow {
   margin-bottom: 1rem;
   width: 100%;
+}
+
+.offNotes,
+.onNotes {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100%;
+}
+
+.onNotes {
+  background-color: #212121;
+}
+
+.offNotes {
+  background-color: #313131;
 }

@@ -13,95 +13,138 @@ import { useTrack } from "../../lib/hooks/useTrack";
 
 interface TrackProps {
   track: ITrack;
+  isMousePressed: boolean;
 }
 
-export const Track: React.FC<TrackProps> = ({ track }) => {
-  const {
-    audioRef,
-    play,
-    setVolume,
-    showOptionsPopover,
-    volume,
-    togglePopover,
-  } = useTrack(track);
-  const dropdownRef = React.useRef();
-  const { toggleNote, currentStep, sequenceLength } = React.useContext(Context);
+export const Track: React.FC<TrackProps> = React.memo(
+  ({ track, isMousePressed }) => {
+    const {
+      audioRef,
+      play,
+      setVolume,
+      showOptionsPopover,
+      volume,
+      togglePopover,
+    } = useTrack(track);
+    const dropdownRef = React.useRef();
+    const {
+      toggleNote,
+      currentStep,
+      sequenceLength,
+      isPlaying,
+      togglePlayback,
+      stopPlayback,
+    } = React.useContext(Context);
 
-  React.useEffect(() => {
-    console.log({ showOptionsPopover });
-    if (showOptionsPopover) {
-      window.addEventListener("click", handleClickOff);
-    } else {
-      window.removeEventListener("click", handleClickOff);
-    }
+    React.useEffect(() => {
+      if (showOptionsPopover) {
+        window.addEventListener("click", handleClickOff);
+      } else {
+        window.removeEventListener("click", handleClickOff);
+      }
 
-    return () => {
-      window.removeEventListener("click", handleClickOff);
+      return () => {
+        window.removeEventListener("click", handleClickOff);
+      };
+    }, [showOptionsPopover]);
+
+    // HANDLERS
+    const playSample = () => {
+      if (audioRef.current) {
+        audioRef.current.play();
+      }
     };
-  }, [showOptionsPopover]);
-  // HANDLERS
-  const playSample = () => {
-    if (audioRef.current) {
-      audioRef.current.play();
-    }
-  };
 
-  const handleClickOff = (e: MouseEvent) => {
-    if (e.target !== dropdownRef.current) {
-      togglePopover(false);
-    }
-  };
-  const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setVolume(+e.target.value / 100);
-  };
+    const handleClickOff = (e: MouseEvent) => {
+      if (e.target !== dropdownRef.current) {
+        togglePopover(false);
+      }
+    };
+    const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
+      if (isPlaying) {
+        stopPlayback();
+      }
+      setVolume(+e.target.value / 100);
+    };
 
-  // CONTENT
-  const notes = [...Array(sequenceLength)].map((el, i) => {
-    const isActive = track.steps.indexOf(i) !== -1;
-    const isNoteOnCurrentStep = currentStep === i;
+    // CONTENT
+    const notes: React.ReactElement[] = [];
+
+    let noteSwitch = false;
+    // get content for alternating note styles
+    for (let i = 0; i < sequenceLength; i += 4) {
+      notes.push(
+        <div
+          className={noteSwitch ? styles.offNotes : styles.onNotes}
+          key={`${track.name}_notes_${i}`}
+        >
+          <Note
+            active={track.steps.indexOf(i) !== -1}
+            onClick={() => toggleNote(i, track.name)}
+            isCurrent={currentStep === i}
+            play={play}
+            isMousePressed={isMousePressed}
+          />
+          <Note
+            active={track.steps.indexOf(i + 1) !== -1}
+            onClick={() => toggleNote(i + 1, track.name)}
+            isCurrent={currentStep === i + 1}
+            play={play}
+            isMousePressed={isMousePressed}
+          />
+          <Note
+            active={track.steps.indexOf(i + 2) !== -1}
+            onClick={() => toggleNote(i + 2, track.name)}
+            isCurrent={currentStep === i + 2}
+            play={play}
+            isMousePressed={isMousePressed}
+          />
+          <Note
+            active={track.steps.indexOf(i + 3) !== -1}
+            onClick={() => toggleNote(i + 3, track.name)}
+            isCurrent={currentStep === i + 3}
+            play={play}
+            isMousePressed={isMousePressed}
+          />
+        </div>
+      );
+      noteSwitch = !noteSwitch;
+    }
 
     return (
-      <Note
-        active={isActive}
-        key={`${track.name}_${i}`}
-        onClick={() => toggleNote(i, track.name)}
-        isCurrent={isNoteOnCurrentStep}
-        play={play}
-      />
-    );
-  });
+      <div className={styles.trackContainer}>
+        <div className={styles.trackInfo}>
+          <div className={styles.trackControls}>
+            <audio ref={audioRef}>
+              <source src={track.file}></source>
+              Your browser doesn't support the audio tag
+            </audio>
+            <Button onClick={playSample}>
+              <FaPlay color={GREEN} />
+            </Button>
 
-  return (
-    <div className={styles.trackContainer}>
-      <div className={styles.trackInfo}>
-        <div className={styles.trackControls}>
-          <audio ref={audioRef}>
-            <source src={track.file}></source>
-            Your browser doesn't support the audio tag
-          </audio>
-          <Button onClick={playSample}>
-            <FaPlay color={GREEN} />
-          </Button>
-
-          <Button onClick={() => togglePopover(!showOptionsPopover)}>
-            <FiMoreVertical color="white" />
-          </Button>
+            <Button onClick={() => togglePopover(!showOptionsPopover)}>
+              <FiMoreVertical color="white" />
+            </Button>
+          </div>
+          <p>{track.name}</p>
+          {showOptionsPopover && (
+            <Dropdown
+              trackName={track.name}
+              handleVolumeChange={handleVolumeChange}
+              volume={volume}
+              handleClose={() => togglePopover(false)}
+              ref={dropdownRef}
+            />
+          )}
         </div>
-        <p>{track.name}</p>
-        {showOptionsPopover && (
-          <Dropdown
-            trackName={track.name}
-            handleVolumeChange={handleVolumeChange}
-            volume={volume}
-            handleClose={() => togglePopover(false)}
-            ref={dropdownRef}
-          />
-        )}
+        <div className={styles.trackSteps}>
+          {notes.map((noteBlock) => noteBlock)}
+        </div>
       </div>
-      <div className={styles.trackSteps}>{notes}</div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 interface DropdownProps {
   trackName: string;

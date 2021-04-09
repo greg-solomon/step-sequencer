@@ -1,10 +1,9 @@
 .note,
 .activeNote,
 .currentNote {
-  width: 2rem;
-  height: 2.5rem;
+  width: 50%;
+  height: 100%;
   border: 1px solid gray;
-  border-radius: 6px;
   cursor: pointer;
 }
 
