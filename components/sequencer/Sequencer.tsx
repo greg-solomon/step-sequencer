@@ -38,7 +38,7 @@ export const Sequencer: React.FC = () => {
   return (
     <div className={styles.container}>
       <Toolbar />
-      <PlayIndicator widthRef={widthRef} />
+      {isPlaying && <PlayIndicator widthRef={widthRef} />}
       <TrackList ref={widthRef} isMousePressed={isMousePressed} />
     </div>
   );
