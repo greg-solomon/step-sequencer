@@ -2,6 +2,7 @@ import React, { SetStateAction } from "react";
 import { Dispatch } from "react";
 import { BASE_BPM_PER_SEC } from "../constants/constants";
 import { drums, ITrack } from "../constants/drums";
+import { useAudioContext } from "./useAudioContext";
 import { useTimer } from "./useTimer";
 
 interface ContextState {
@@ -18,11 +19,13 @@ interface ContextState {
   resetPlayback: () => void;
   stopPlayback: () => void;
   clearNotes: () => void;
+  audioCtx: AudioContext;
 }
 
 const Context = React.createContext<ContextState>(null);
 
 const Provider: React.FC = ({ children }) => {
+  const audioCtx = useAudioContext();
   const [sequenceLength, setSequenceLength] = React.useState(16);
   const [tracks, setTracks] = React.useState(drums);
   const [pastLapsedTime, setPastLapse] = React.useState(0);
@@ -120,6 +123,7 @@ const Provider: React.FC = ({ children }) => {
     resetPlayback,
     stopPlayback,
     clearNotes,
+    audioCtx,
   };
 
   return <Context.Provider value={contextValue}>{children}</Context.Provider>;

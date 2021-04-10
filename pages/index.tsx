@@ -4,6 +4,7 @@ import { Sequencer } from "../components/sequencer/Sequencer";
 import styles from "../styles/Home.module.scss";
 import { useDevice } from "../lib/hooks/useDevice";
 import { InvalidBrowserMessage } from "../components/InvalidBrowserMessage";
+import { Visualizer } from "../components/visualizer/Visualizer";
 
 export default function Home() {
   const isValidDevice = useDevice();
@@ -18,6 +19,7 @@ export default function Home() {
         <title>React Step Sequencer</title>
       </Head>
       <main className={styles.main}>
+        <Visualizer />
         <Sequencer />
       </main>
     </>

@@ -1,13 +1,19 @@
-import { useState, useEffect, useCallback } from "react";
+import React from "react";
 import Sound from "../utils/Sound";
+import { useAnalyzer } from "./AnalyzerContext";
+import { Context } from "./Context";
 
-const useSound = (soundFilePath, volume = 1) => {
-  const [sound, setSound] = useState<Sound>(null);
-  const play = useCallback(() => sound.play(volume), [sound, volume]);
+const useSound = (soundFilePath: string, volume: number = 1) => {
+  const [sound, setSound] = React.useState<Sound>(null);
+  const { audioCtx } = React.useContext(Context);
+  const { analyzer } = useAnalyzer();
+  const play = React.useCallback(() => sound.play(volume), [sound, volume]);
 
-  useEffect(() => {
-    setSound(new Sound(soundFilePath));
-  }, [soundFilePath]);
+  React.useEffect(() => {
+    if (audioCtx && !sound && analyzer) {
+      setSound(new Sound(soundFilePath, audioCtx, analyzer));
+    }
+  }, [soundFilePath, audioCtx, analyzer]);
 
   return [play];
 };

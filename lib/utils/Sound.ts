@@ -1,4 +1,4 @@
-// helpful polyfill for sounds found in this repository -> https://github.com/joeshub/react-808/blob/master/src/utils/Sound.js
+// modified polyfill for sounds found in this repository -> https://github.com/joeshub/react-808/blob/master/src/utils/Sound.js
 class Sound {
   audioContext: AudioContext;
   isSafariFixed: boolean;
@@ -6,22 +6,26 @@ class Sound {
   recorderNode: GainNode;
   buffer: any;
   path: string;
-  constructor(path) {
+  analyzer: AnalyserNode;
+  constructor(
+    path: string,
+    audioContext: AudioContext,
+    analyzer: AnalyserNode
+  ) {
     const isSafari =
       !!navigator.userAgent.match(/safari/i) &&
       !navigator.userAgent.match(/chrome/i) &&
       typeof document.body.style.webkitFilter !== "undefined";
-    const AudioContext =
-      (<any>window).AudioContext ||
-      (<any>window).webkitAudioContext ||
-      (<any>window).MozAudioContext;
-    this.audioContext = new AudioContext();
+
+    this.audioContext = audioContext;
+
     if (isSafari) {
       this.isSafariFixed = false;
       this.boundSafariFix = this.safariFix.bind(this);
-      (<any>window).addEventListener("click", this.boundSafariFix, false);
+      window.addEventListener("click", this.boundSafariFix, false);
     }
     if (!this.buffer) this.loadSound(path);
+    this.analyzer = analyzer;
   }
 
   safariFix() {
@@ -38,7 +42,7 @@ class Sound {
     this.isSafariFixed = true;
   }
 
-  async loadSound(path) {
+  async loadSound(path: string) {
     this.recorderNode = this.audioContext.createGain();
     this.recorderNode.gain.value = 1;
     this.buffer = null;
@@ -52,7 +56,10 @@ class Sound {
     this.buffer = audioBuffer;
   }
 
-  decodeAudioDataAsync(audioContext, arrayBuffer) {
+  decodeAudioDataAsync(
+    audioContext: AudioContext,
+    arrayBuffer: ArrayBuffer
+  ): Promise<AudioBuffer> {
     return new Promise((resolve, reject) => {
       audioContext.decodeAudioData(
         arrayBuffer,
@@ -70,6 +77,7 @@ class Sound {
     sound.playbackRate.value = rateValue;
     sound.buffer = this.buffer;
     sound.connect(gain);
+    sound.connect(this.analyzer);
     gain.connect(this.recorderNode);
     gain.connect(this.audioContext.destination);
     sound.start(0);

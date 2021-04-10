@@ -1,15 +1,14 @@
-import React, { ChangeEvent, FormEvent } from "react";
+import React, { ChangeEvent } from "react";
 import { FaPlay } from "react-icons/fa";
 import { FiMoreVertical } from "react-icons/fi";
 import { MdClose } from "react-icons/md";
 import { GREEN } from "../../lib/constants/constants";
 import { ITrack } from "../../lib/constants/drums";
 import { Context } from "../../lib/hooks/Context";
-import useSound from "../../lib/hooks/useSound";
 import { Note } from "./Note";
 import { Button } from "../ui/Button";
 import styles from "../../styles/TrackList.module.scss";
-import { useTrack } from "../../lib/hooks/useTrack";
+import useSound from "../../lib/hooks/useSound";
 
 interface TrackProps {
   track: ITrack;
@@ -18,14 +17,10 @@ interface TrackProps {
 
 export const Track: React.FC<TrackProps> = React.memo(
   ({ track, isMousePressed }) => {
-    const {
-      audioRef,
-      play,
-      setVolume,
-      showOptionsPopover,
-      volume,
-      togglePopover,
-    } = useTrack(track);
+    const audioRef = React.useRef<HTMLAudioElement>(null);
+    const [volume, setVolume] = React.useState(1);
+    const [play] = useSound(track.file, volume);
+    const [showOptionsPopover, togglePopover] = React.useState(false);
     const dropdownRef = React.useRef();
     const {
       toggleNote,
