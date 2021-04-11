@@ -17,6 +17,7 @@ export default function Home() {
     <>
       <Head>
         <title>React Step Sequencer</title>
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <main className={styles.main}>
         <Visualizer />
