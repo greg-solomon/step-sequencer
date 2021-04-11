@@ -8,7 +8,7 @@ import { Button } from "../ui/Button";
 interface VisualizerProps {}
 
 export const Visualizer: React.FC<VisualizerProps> = ({}) => {
-  const { isPlaying, audioCtx } = React.useContext(Context);
+  const { isPlaying, audioCtx, stopPlayback } = React.useContext(Context);
   const [showFrequencyGraph, setFrequencyGraph] = React.useState(false);
   const { analyzer } = useAnalyzer();
   const [canvasCtx, setCanvasCtx] = React.useState<CanvasRenderingContext2D>(
@@ -30,7 +30,7 @@ export const Visualizer: React.FC<VisualizerProps> = ({}) => {
     if (!canvas.current) return;
     if (!analyzer) return;
 
-    let drawFrame;
+    let drawFrame: number;
     canvasCtx.lineWidth = 1;
 
     const drawWaveForm = () => {
@@ -66,15 +66,14 @@ export const Visualizer: React.FC<VisualizerProps> = ({}) => {
     };
 
     const drawFrequency = () => {
+      drawFrame = requestAnimationFrame(drawFrequency);
       analyzer.fftSize = 256;
       const dataArray = new Uint8Array(analyzer.frequencyBinCount);
-
-      drawFrame = requestAnimationFrame(drawFrequency);
 
       analyzer.getByteFrequencyData(dataArray);
 
       canvasCtx.fillStyle = "#212121";
-      canvasCtx.fillRect(0, 0, canvas.current.width, canvas.current.height);
+      canvasCtx.clearRect(0, 0, canvas.current.width, canvas.current.height);
 
       const barWidth = (canvas.current.width / dataArray.length) * 2.5;
       let barHeight;
@@ -92,17 +91,19 @@ export const Visualizer: React.FC<VisualizerProps> = ({}) => {
         x += barWidth;
       }
     };
-
     if (isPlaying) {
       if (showFrequencyGraph) {
         drawFrequency();
       } else {
         drawWaveForm();
       }
-    } else {
-      cancelAnimationFrame(drawFrame);
     }
-  }, [canvasCtx, isPlaying, analyzer, showFrequencyGraph]);
+
+    return () => {
+      cancelAnimationFrame(drawFrame);
+      canvasCtx.clearRect(0, 0, canvas.current.width, canvas.current.height);
+    };
+  }, [canvasCtx, analyzer, showFrequencyGraph, isPlaying]);
 
   const handleWaveformSwitch = () => {
     setFrequencyGraph(false);

@@ -21,7 +21,7 @@ export const Track: React.FC<TrackProps> = React.memo(
     const [volume, setVolume] = React.useState(1);
     const [play] = useSound(track.file, volume);
     const [showOptionsPopover, togglePopover] = React.useState(false);
-    const dropdownRef = React.useRef();
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
     const {
       toggleNote,
       currentStep,
@@ -51,11 +51,14 @@ export const Track: React.FC<TrackProps> = React.memo(
     };
 
     const handleClickOff = (e: MouseEvent) => {
-      if (e.target !== dropdownRef.current) {
+      if (!dropdownRef.current) return;
+      if (!dropdownRef.current.contains(e.target as Node)) {
         togglePopover(false);
       }
     };
     const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+      e.preventDefault();
       if (isPlaying) {
         stopPlayback();
       }
