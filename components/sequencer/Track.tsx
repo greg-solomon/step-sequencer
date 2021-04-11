@@ -46,7 +46,7 @@ export const Track: React.FC<TrackProps> = React.memo(
     // HANDLERS
     const playSample = () => {
       if (audioRef.current) {
-        audioRef.current.play();
+        play();
       }
     };
 

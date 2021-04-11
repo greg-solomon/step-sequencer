@@ -3,11 +3,13 @@ import styles from "./Visualizer.module.scss";
 import { Context } from "../../lib/hooks/Context";
 import { useAnalyzer } from "../../lib/hooks/AnalyzerContext";
 import { GREEN } from "../../lib/constants/constants";
+import { Button } from "../ui/Button";
 
 interface VisualizerProps {}
 
 export const Visualizer: React.FC<VisualizerProps> = ({}) => {
   const { isPlaying, audioCtx } = React.useContext(Context);
+  const [showFrequencyGraph, setFrequencyGraph] = React.useState(false);
   const { analyzer } = useAnalyzer();
   const [canvasCtx, setCanvasCtx] = React.useState<CanvasRenderingContext2D>(
     null
@@ -17,6 +19,9 @@ export const Visualizer: React.FC<VisualizerProps> = ({}) => {
   React.useEffect(() => {
     if (canvas.current) {
       setCanvasCtx(canvas.current.getContext("2d"));
+      const parentWidth = canvas.current.parentElement.clientWidth;
+      canvas.current.setAttribute("width", `${parentWidth}px`);
+      canvas.current.height = 300;
     }
   }, [audioCtx]);
 
@@ -24,19 +29,20 @@ export const Visualizer: React.FC<VisualizerProps> = ({}) => {
     if (!canvasCtx) return;
     if (!canvas.current) return;
     if (!analyzer) return;
-    analyzer.fftSize = 2048;
 
-    const dataArray = new Uint8Array(analyzer.fftSize);
     let drawFrame;
-    const draw = () => {
-      drawFrame = requestAnimationFrame(draw);
+    canvasCtx.lineWidth = 1;
+
+    const drawWaveForm = () => {
+      drawFrame = requestAnimationFrame(drawWaveForm);
+      analyzer.fftSize = 2048;
+      const dataArray = new Uint8Array(analyzer.fftSize);
       canvasCtx.clearRect(0, 0, canvas.current.width, canvas.current.height);
 
       analyzer.getByteTimeDomainData(dataArray);
 
       canvasCtx.fillStyle = `#313131`;
 
-      canvasCtx.lineWidth = 1;
       canvasCtx.strokeStyle = GREEN;
 
       canvasCtx.beginPath();
@@ -59,12 +65,82 @@ export const Visualizer: React.FC<VisualizerProps> = ({}) => {
       canvasCtx.stroke();
     };
 
+    const drawFrequency = () => {
+      analyzer.fftSize = 256;
+      const dataArray = new Uint8Array(analyzer.frequencyBinCount);
+
+      drawFrame = requestAnimationFrame(drawFrequency);
+
+      analyzer.getByteFrequencyData(dataArray);
+
+      canvasCtx.fillStyle = "#212121";
+      canvasCtx.fillRect(0, 0, canvas.current.width, canvas.current.height);
+
+      const barWidth = (canvas.current.width / dataArray.length) * 2.5;
+      let barHeight;
+      let x = 0;
+
+      for (let i = 0; i < dataArray.length; i++) {
+        barHeight = dataArray[i];
+        canvasCtx.fillStyle = GREEN;
+        canvasCtx.fillRect(
+          x,
+          canvas.current.height - barHeight,
+          barWidth,
+          barHeight
+        );
+        x += barWidth;
+      }
+    };
+
     if (isPlaying) {
-      draw();
+      if (showFrequencyGraph) {
+        drawFrequency();
+      } else {
+        drawWaveForm();
+      }
     } else {
       cancelAnimationFrame(drawFrame);
     }
-  }, [canvasCtx, isPlaying, analyzer]);
+  }, [canvasCtx, isPlaying, analyzer, showFrequencyGraph]);
 
-  return <canvas ref={canvas} className={styles.canvas}></canvas>;
+  const handleWaveformSwitch = () => {
+    setFrequencyGraph(false);
+  };
+
+  const handleFrequencySwitch = () => {
+    setFrequencyGraph(true);
+  };
+
+  return (
+    <div className={styles.canvasWrapper}>
+      <div className={styles.canvasControls}>
+        <button
+          onClick={handleWaveformSwitch}
+          style={{
+            border: !showFrequencyGraph
+              ? `1px solid ${GREEN}`
+              : `1px solid gray`,
+            color: !showFrequencyGraph ? GREEN : "white",
+          }}
+          className={styles.canvasBtn}
+        >
+          Waveform
+        </button>
+        <button
+          onClick={handleFrequencySwitch}
+          style={{
+            border: showFrequencyGraph
+              ? `1px solid ${GREEN}`
+              : `1px solid gray`,
+            color: showFrequencyGraph ? GREEN : "white",
+          }}
+          className={styles.canvasBtn}
+        >
+          Frequency
+        </button>
+      </div>
+      <canvas ref={canvas} className={styles.canvas}></canvas>
+    </div>
+  );
 };
