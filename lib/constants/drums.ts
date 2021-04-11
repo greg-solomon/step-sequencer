@@ -17,18 +17,18 @@ const drums: ITrack[] = [
   },
   {
     name: "Snare",
-    file: "/sounds/snare.wav",
+    file: "/sounds/snr.wav",
     steps: [4, 12],
   },
   {
     name: "Closed Hi Hat",
     file: "/sounds/closed_hat.wav",
-    steps: [0, 2, 4, 6, 8, 10, 12, 14],
+    steps: [],
   },
   {
     name: "Cymbal",
     file: "/sounds/cymbal.wav",
-    steps: [0, 8],
+    steps: [2, 6, 10, 14],
   },
 ];
 

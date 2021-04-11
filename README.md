@@ -8,15 +8,24 @@ Built with NextJS
 
 **Clone or download the repository and install the dependencies in the directory**
 
-`npm i`
+```
+npm i
+```
 
 or
 
-`yarn`
+```
+yarn
+```
 
 **Start the project**
 
-`npm run dev`
+```
+npm run dev
+```
+
 or
 
-`yarn dev`
+```
+yarn dev
+```
