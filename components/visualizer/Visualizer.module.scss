@@ -1,9 +1,12 @@
 .canvas {
   border: 1px solid lightgrey;
+  width: 100%;
+  max-height: 300px;
 }
 
 .canvasWrapper {
   position: relative;
+  width: 100%;
 }
 .canvasControls {
   position: absolute;
